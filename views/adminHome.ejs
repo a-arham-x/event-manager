@@ -10,34 +10,33 @@
             window.location.href = "/"
         }
     </script>
-  
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
     <button onclick="logOut()" class="top-right">Log Out</button>
     <button onclick="toggleCreateAdminForm()" class="top-right" style="margin-right: 100px;">Create Admin</button>
 
-    <h1>Welcome to Admin Dashboard</h1>
+    <h1>Welcome to Admin Dashboard, <%= admin.name %></h1>
 
     <div id="events">
-        <h2>Events</h2>
-        <ul id="eventList">
-            <!-- Event items will be dynamically added here -->
-            <li>
-                Event 1
-                <div class="btn-container">
-                    <button class="approve-btn">Approve</button>
-                    <button class="delete-btn">Delete</button>
+        <section class="events-section">
+            <h2>Events</h2>
+            <!-- Display events here -->
+            <% events.forEach(event => { %>
+                <div class="event" id="event-<%= event.id %>">
+                    <h3><%= event.eventName %></h3>
+                    <p>Date: <%= event.datetime.slice(0, 10) %></p>
+                    <p>Time: <%= event.datetime.slice(11, 19) %></p>
+                    <p>Location: <%= event.location %></p>
+                    <% if (event.approved) { %>
+                        <p>Event is approved</p>
+                    <% } else { %>
+                        <button id="button-<%= event.id %>" style="display:inline;" class="approve-btn" onclick="approveEvent('<%= event.id %>')">Approve</button>
+                    <% } %>
+                    <button class="delete-btn" onclick="deleteEvent('<%= event.id %>')">Delete</button>
                 </div>
-            </li>
-            <li>
-                Event 2
-                <div class="btn-container">
-                    <button class="approve-btn">Approve</button>
-                    <button class="delete-btn">Delete</button>
-                </div>
-            </li>
-            <!-- Add more event items as needed -->
-        </ul>
+            <% }); %>
+        </section>
     </div>
 
     <!-- Other sections for registrations and discussions -->
@@ -45,7 +44,7 @@
     <div id="createAdminForm" class="create-admin-form">
         <button onclick="toggleCreateAdminForm()" class="close-btn">&times;</button>
         <h2>Create New Admin</h2>
-        <form>
+        <div>
             <label for="name">Name:</label>
             <input type="text" id="name" name="name" required>
             <label for="username">Username:</label>
@@ -54,8 +53,8 @@
             <input type="email" id="email" name="email" required>
             <label for="password">Password:</label>
             <input type="password" id="password" name="password" required>
-            <button type="submit">Create Admin</button>
-        </form>
+            <button onclick="createAdmin()">Create Admin</button>
+        </div>
     </div>
 
     <script>
@@ -64,7 +63,7 @@
         function logOut(){
          localStorage.setItem("admin-token", "");
             window.location.href = "/";
-}
+        }
 
         function toggleCreateAdminForm() {
             var form = document.getElementById("createAdminForm");
@@ -78,7 +77,66 @@ function logOut(){
         localStorage.setItem("admin-token", "")
         window.location.href = "/"
     }
-
+    async function approveEvent(id){
+        $.ajax({
+            url: `/api/events/${id}/approve`,
+            method: "PUT",
+            headers: {
+                "admin-token": localStorage.getItem("admin-token")
+            },
+            success: function(response) {
+                if (response.success) {
+                    // If the approval was successful, update the event status dynamically
+                    $(`#event-${id}`).append("<p>Event is approved</p>")
+                    // $(`#button-${id}`).style.display = "none";
+                    // Optionally, you can remove the approve button
+                    const approveButton = $(`#button-${id}`);
+                    approveButton.style.display="none";
+                }
+                window.alert(response.message);
+            },
+            error: function(xhr, status, error) {
+                console.error('Error approving event:', error);
+                window.alert('An error occurred while approving the event.');
+            }
+        });
+    }
+    async function deleteEvent(id){
+        $.ajax({
+            url: `/api/events/${id}`,
+            method: "DELETE",
+            headers: {
+                "admin-token": localStorage.getItem("admin-token")
+            },
+            success: function(response) {
+                if (response.success) {
+                    $(`#event-${id}`).remove();
+                }
+                window.alert(response.message);
+            },
+            error: function(xhr, status, error) {
+                console.error('Error approving event:', error);
+                window.alert('An error occurred while approving the event.');
+            }
+        });
+    }
+    async function createAdmin(){
+        const name = document.getElementById('name').value;
+        const username = document.getElementById('username').value;
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const response = await fetch("/api/admin", {
+            method: "POST",
+            headers: {
+                "Content-type": "application/json",
+                "admin-token": localStorage.getItem('admin-token')
+            }, 
+            body: JSON.stringify({ name, username, email, password })
+        })
+        const json = await response.json();
+        toggleCreateAdminForm();
+        window.alert(json.message);
+    }
     </script>
 </body>
 </html>

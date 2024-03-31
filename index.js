@@ -143,7 +143,13 @@ app.get("/home", async (req, res)=>{
 })
 
 app.get("/admin", async (req, res)=>{
-    res.render("adminhome.ejs");
+    const response = await fetch("http://localhost:3000/api/events");
+    const json = await response.json();
+    const events = json.events;
+    if (!loggedInUser){
+        res.render("loggingOut.ejs")
+    }
+    res.render("adminhome.ejs", {admin: loggedInUser, events});
 })
 
 // Route for user login
@@ -154,11 +160,12 @@ app.post('/api/login', async (req, res) => {
         const user = await User.findOne({ where: { username } });
 
         if (user) {
-            const passwordCorrect = bcrypt.compare(password, user.password);
+            const passwordCorrect = await bcrypt.compare(password, user.password);
             if (passwordCorrect) {
                 if (user.isAdmin){
                     const id = {admin:{id: user.id}}
                     const admin_token = jwt.sign(id, process.env.JWT_SECRET); 
+                    loggedInUser = {name: user.name, email: user.email, username: user.username};
                     return res.json({ message: 'Login successful', admin_token, success: true });
                 }
                 const id = {user:{id: user.id}}
@@ -311,7 +318,7 @@ app.post('/api/admin', fetchAdmin, async (req, res) => {
         return res.json({ message: 'New admin created successfully', success: true });
     } catch (error) {
         console.error('Error creating new admin:', error);
-        return res.json({ message: 'Internal server error' });
+        return res.json({ message: 'Internal server error', success: false });
     }
 });
 
