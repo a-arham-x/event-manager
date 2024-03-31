@@ -1,0 +1,101 @@
+<!-- views/home.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Home</title>
+    <link rel="stylesheet" href="/CSS/home.css">
+</head>
+<script>
+    if (!localStorage.getItem("user-token")){
+        window.location.href = "/"
+    }else{
+        const getUser = async ()=>{
+            const response = await fetch("/api/user", {
+                method: "GET", 
+                headers: {
+                    "user-token": localStorage.getItem("user-token")
+                }
+            })
+            const json = await response.json();
+            return json.user;
+        }
+        const user = getUser();
+        const getEvents = async ()=>{
+            const response = await fetch("/api/events");
+            const json = await response.json();
+            return json.events;
+        }
+        const events = json.events;
+    }
+</script>
+<body>
+    <header>
+        <h1>Welcome, <%= user.name %>!</h1>
+        <button onclick="logOut()" class="logout-btn">Logout</button>
+    </header>
+    <main>
+        <section class="events-section">
+            <h2>Events</h2>
+            <!-- Display events here -->
+            <% events.forEach(event => { %>
+                <div class="event">
+                    <h3><%= event.eventName %></h3>
+                    <p>Date: <%= event.datetime.slice(0, 10) %></p>
+                    <p>Time: <%= event.datetime.slice(11, 19) %></p>
+                    <p>Location: <%= event.location %></p>
+                </div>
+            <% }); %>
+        </section>
+        <section class="create-event-section">
+            <h2>Create Event</h2>
+            <div>
+                <div class="form-group">
+                    <label for="eventName">Event Name</label>
+                    <input type="text" id="eventName" name="eventName" required>
+                </div>
+                <div class="form-group">
+                    <label for="eventDate">Event Date</label>
+                    <input type="date" id="eventDate" name="eventDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="eventTime">Event Time</label>
+                    <input type="time" id="eventTime" name="eventTime" required>
+                </div>
+                <div class="form-group">
+                    <label for="eventLocation">Event Location</label>
+                    <input type="text" id="eventLocation" name="eventLocation" required>
+                </div>
+                <div class="form-group">
+                    <label for="eventLocation">Event Details</label>
+                    <input type="text" id="eventDetails" name="eventDetails">
+                </div>
+                <button onclick="createCustomEvent()">Create Event</button>
+            </div>
+        </section>
+    </main>
+</body>
+<script>
+    function logOut(){
+        localStorage.setItem("user-token", "")
+        window.location.href = "/"
+    }
+    async function createCustomEvent(){
+        const eventName = document.getElementById("eventName").value;
+        const datetime = document.getElementById("eventDate").value + "T" + document.getElementById("eventTime").value + ":00"
+        const location = document.getElementById("eventLocation").value;
+        const details = document.getElementById("eventDetails").value;
+        const response = await fetch("/api/events", {
+            method: "POST",
+            headers: {
+                "Content-type": "application/json",
+                "user-token": localStorage.getItem("user-token")
+            },
+            body: JSON.stringify({eventName, datetime, location, details})
+        })
+        const json = await response.json();
+        window.alert(json.message);
+    }
+</script>
+</html>
