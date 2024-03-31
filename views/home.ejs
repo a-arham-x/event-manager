@@ -10,26 +10,9 @@
 <script>
     if (!localStorage.getItem("user-token")){
         window.location.href = "/"
-    }else{
-        const getUser = async ()=>{
-            const response = await fetch("/api/user", {
-                method: "GET", 
-                headers: {
-                    "user-token": localStorage.getItem("user-token")
-                }
-            })
-            const json = await response.json();
-            return json.user;
-        }
-        const user = getUser();
-        const getEvents = async ()=>{
-            const response = await fetch("/api/events");
-            const json = await response.json();
-            return json.events;
-        }
-        const events = json.events;
     }
 </script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <body>
     <header>
         <h1>Welcome, <%= user.name %>!</h1>
@@ -86,16 +69,32 @@
         const datetime = document.getElementById("eventDate").value + "T" + document.getElementById("eventTime").value + ":00"
         const location = document.getElementById("eventLocation").value;
         const details = document.getElementById("eventDetails").value;
-        const response = await fetch("/api/events", {
+        $.ajax({
+            url: "/api/events",
             method: "POST",
             headers: {
                 "Content-type": "application/json",
                 "user-token": localStorage.getItem("user-token")
             },
-            body: JSON.stringify({eventName, datetime, location, details})
-        })
-        const json = await response.json();
-        window.alert(json.message);
+            data: JSON.stringify({eventName, datetime, location, details}),
+            success: function(response) {
+                if (response.success) {
+                    const newEvent = response.event;
+                    const eventHtml = `
+                        <div class="event">
+                            <h3>${newEvent.eventName}</h3>
+                            <p>Date: ${newEvent.datetime.slice(0, 10)}</p>
+                            <p>Time: ${newEvent.datetime.slice(11, 19)}</p>
+                            <p>Location: ${newEvent.location}</p>
+                        </div>`;
+                    $('.events-section').append(eventHtml);
+                }
+                alert(response.message);
+            },
+            error: function(xhr, status, error) {
+                alert("Error: " + error);
+            }
+        });
     }
 </script>
 </html>
