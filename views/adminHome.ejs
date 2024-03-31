@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
     <link rel="stylesheet" href="/CSS/admin.css">
+    <script>
+        if (!localStorage.getItem("admin-token")){
+            window.location.href = "/"
+        }
+    </script>
   
 </head>
 <body>
@@ -55,6 +60,7 @@
 
     <script>
        // admin.js
+       
         function logOut(){
          localStorage.setItem("admin-token", "");
             window.location.href = "/";
@@ -68,6 +74,10 @@
               form.style.display = "block";
             }
 }
+function logOut(){
+        localStorage.setItem("admin-token", "")
+        window.location.href = "/"
+    }
 
     </script>
 </body>
