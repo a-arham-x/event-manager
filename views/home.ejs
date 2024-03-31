@@ -28,6 +28,9 @@
                     <p>Date: <%= event.datetime.slice(0, 10) %></p>
                     <p>Time: <%= event.datetime.slice(11, 19) %></p>
                     <p>Location: <%= event.location %></p>
+                    <% if (event.weather) { %>
+                        <p>Weather: <%= event.weather %></p>
+                    <% } %>
                     <% if (event.approved) { %>
                         <p>Event is approved</p>
                     <% } %>
