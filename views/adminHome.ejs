@@ -5,10 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
     <link rel="stylesheet" href="/CSS/admin.css">
+  
 </head>
 <body>
+    <button onclick="logOut()" class="top-right">Log Out</button>
+    <button onclick="toggleCreateAdminForm()" class="top-right" style="margin-right: 100px;">Create Admin</button>
+
     <h1>Welcome to Admin Dashboard</h1>
-    <button onclick="logOut()">Log Out</button>
 
     <div id="events">
         <h2>Events</h2>
@@ -34,11 +37,38 @@
 
     <!-- Other sections for registrations and discussions -->
 
+    <div id="createAdminForm" class="create-admin-form">
+        <button onclick="toggleCreateAdminForm()" class="close-btn">&times;</button>
+        <h2>Create New Admin</h2>
+        <form>
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required>
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            <button type="submit">Create Admin</button>
+        </form>
+    </div>
+
     <script>
+       // admin.js
         function logOut(){
-            localStorage.setItem("admin-token", "");
+         localStorage.setItem("admin-token", "");
             window.location.href = "/";
-        }
+}
+
+        function toggleCreateAdminForm() {
+            var form = document.getElementById("createAdminForm");
+            if (form.style.display === "block") {
+             form.style.display = "none";
+            } else {
+              form.style.display = "block";
+            }
+}
+
     </script>
 </body>
 </html>
