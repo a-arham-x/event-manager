@@ -3,21 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="/CSS/admin.css">
 </head>
-<script>
-    if (!localStorage.getItem("admin-token")){
-        window.location.href = "/"
-    }
-</script>
 <body>
-    <h1>This is Admin home</h1>
+    <h1>Welcome to Admin Dashboard</h1>
     <button onclick="logOut()">Log Out</button>
+
+    <div id="events">
+        <h2>Events</h2>
+        <ul id="eventList">
+            <!-- Event items will be dynamically added here -->
+            <li>
+                Event 1
+                <div class="btn-container">
+                    <button class="approve-btn">Approve</button>
+                    <button class="delete-btn">Delete</button>
+                </div>
+            </li>
+            <li>
+                Event 2
+                <div class="btn-container">
+                    <button class="approve-btn">Approve</button>
+                    <button class="delete-btn">Delete</button>
+                </div>
+            </li>
+            <!-- Add more event items as needed -->
+        </ul>
+    </div>
+
+    <!-- Other sections for registrations and discussions -->
+
+    <script>
+        function logOut(){
+            localStorage.setItem("admin-token", "");
+            window.location.href = "/";
+        }
+    </script>
 </body>
-<script>
-    function logOut(){
-        localStorage.setItem("admin-token", "")
-        window.location.href = "/"
-    }
-</script>
 </html>
