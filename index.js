@@ -130,10 +130,15 @@ app.get("/signup", async (req, res)=>{
     res.render("signup.ejs");
 })
 
+
+
 app.get("/home", async (req, res)=>{
     const response = await fetch("http://localhost:3000/api/events");
     const json = await response.json();
     const events = json.events;
+    if (!loggedInUser){
+        res.render("loggingOut.ejs")
+    }
     res.render("home.ejs", {user: loggedInUser, events});
 })
 
@@ -347,5 +352,5 @@ app.get('/api/forecast', async (req, res) => {
 
 // Start the server
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+    console.log(`Server is running on port http://localhost:${PORT}`);
 });
