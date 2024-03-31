@@ -191,7 +191,7 @@ app.post('/api/register', async (req, res) => {
             const newUser = await User.create({ username, password: hashedPassword, email, name });
             const id = {user:{id: newUser.id}}
             const token = jwt.sign(id, process.env.JWT_SECRET); 
-            loggedInUser = {name: user.name, email: user.email, username: user.username};
+            loggedInUser = {name: newUser.name, email: newUser.email, username: newUser.username};
             return res.json({ message: 'Registration successful', token, success: true });
         }
     } catch (error) {
