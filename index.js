@@ -233,12 +233,22 @@ app.post('/api/events', fetchUser, async (req, res) => {
     }
 });
 
-
 // Endpoint to get all events (for the dashboard)
 app.get('/api/events', async (req, res) => {
     try {
         const events = await Event.findAll();
-        return res.json({events, success: true});
+        console.log(events)
+        const eventsWithWeather = [];
+        for (e of events){
+            try{
+                const response = await axios.get(`http://api.openweathermap.org/data/2.5/forecast?q=${e.location}&appid=${WEATHER_API_KEY}`);
+                const event = {id: e.id, eventName: e.eventName, datetime: e.datetime, location: e.location, details: e.details, userId: e.userId, approved: e.approved, weather: response.data.list[0].weather[0].description}
+                eventsWithWeather.push(event)
+            }catch(e){
+                eventsWithWeather.push({id: e.id, eventName: e.eventName, datetime: e.datetime, location: e.location, details: e.details, userId: e.userId, approved: e.approved, weather: ""})
+            }
+        }
+        return res.json({events: eventsWithWeather, success: true});
     } catch (error) {
         console.error('Error fetching events:', error);
         return res.json({ message: 'Internal server error', success: false });
@@ -319,40 +329,6 @@ app.post('/api/admin', fetchAdmin, async (req, res) => {
     } catch (error) {
         console.error('Error creating new admin:', error);
         return res.json({ message: 'Internal server error', success: false });
-    }
-});
-
-// Endpoint to retrieve current weather data
-app.get('/api/current-weather', async (req, res) => {
-    const { q } = req.query;
-    console.log(WEATHER_API_KEY)
-
-    try {
-        const response = await axios.get(`http://api.openweathermap.org/data/2.5/forecast?q=${q}&appid=${WEATHER_API_KEY}`);
-
-        return res.json({data: response.data});
-    } catch (error) {
-        console.error('Error fetching current weather:', error);
-        res.status(500).json({ error: 'Failed to fetch current weather' });
-    }
-});
-
-app.get('/api/forecast', async (req, res) => {
-    const { city, date } = req.query; // Date format: YYYY-MM-DD
-
-    try {
-        const response = await axios.get('http://api.weatherapi.com/v1/forecast.json', {
-            params: {
-                key: WEATHER_API_KEY,
-                q: city,
-                dt: date // Date and time for the forecast (optional)
-            }
-        });
-
-        res.json(response.data);
-    } catch (error) {
-        console.error('Error fetching weather forecast:', error);
-        res.status(500).json({ error: 'Failed to fetch weather forecast' });
     }
 });
 

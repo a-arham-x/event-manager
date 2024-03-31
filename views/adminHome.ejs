@@ -28,6 +28,9 @@
                     <p>Date: <%= event.datetime.slice(0, 10) %></p>
                     <p>Time: <%= event.datetime.slice(11, 19) %></p>
                     <p>Location: <%= event.location %></p>
+                    <% if (event.weather) { %>
+                        <p>Weather: <%= event.weather %></p>
+                    <% } %>
                     <% if (event.approved) { %>
                         <p>Event is approved</p>
                     <% } else { %>
@@ -86,10 +89,7 @@ function logOut(){
             },
             success: function(response) {
                 if (response.success) {
-                    // If the approval was successful, update the event status dynamically
                     $(`#event-${id}`).append("<p>Event is approved</p>")
-                    // $(`#button-${id}`).style.display = "none";
-                    // Optionally, you can remove the approve button
                     const approveButton = $(`#button-${id}`);
                     approveButton.style.display="none";
                 }
