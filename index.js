@@ -77,6 +77,9 @@ const Event = sequelize.define('Event', {
     details: {
         type: DataTypes.STRING
     },
+    weather: {
+        type: String
+    },
     approved: {
         type: DataTypes.BOOLEAN,
         defaultValue: false
@@ -152,6 +155,10 @@ app.get("/admin", async (req, res)=>{
     res.render("adminhome.ejs", {admin: loggedInUser, events});
 })
 
+app.get("/viewusers", async (req, res)=>{
+    res.render("viewUsers.ejs");
+})
+
 // Route for user login
 app.post('/api/login', async (req, res) => {
     const { username, password } = req.body;
@@ -212,24 +219,49 @@ app.post('/api/register', async (req, res) => {
     }
 });
 
+app.get("/api/users", fetchAdmin, async (req, res)=>{
+    try {
+        const users = await User.findAll();
+        return res.json({users, success: true});
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        return res.json({ message: 'Internal server error', success: false });
+    }
+})
+
 // Endpoint for users to create events
 app.post('/api/events', fetchUser, async (req, res) => {
     const { eventName, datetime, location, details } = req.body;
 
     try {
+        const response = await axios.get(`http://api.openweathermap.org/data/2.5/forecast?q=${location}&appid=${WEATHER_API_KEY}`);
+        // console.log(response)
         // Create the event
         const event = await Event.create({
             eventName,
             datetime,
             location,
             details,
-            userId: req.user.id
+            userId: req.user.id,
+            weather: response.data.list[0].weather[0].description
         });
-        console.log(event)
+        // console.log(event)
         return res.json({ message: 'Event created successfully', event, success: true });
     } catch (error) {
-        console.error('Error creating event:', error);
-        return res.json({ message: 'Internal server error', success: false });
+        try{
+            const event = await Event.create({
+                eventName,
+                datetime,
+                location,
+                details,
+                userId: req.user.id
+            });
+            // console.log(event)
+            return res.json({ message: 'Event created successfully', event, success: true });
+        }catch(error){
+            console.error('Error creating event:', error);
+            return res.json({ message: 'Internal server error', success: false });
+        }
     }
 });
 
@@ -237,18 +269,7 @@ app.post('/api/events', fetchUser, async (req, res) => {
 app.get('/api/events', async (req, res) => {
     try {
         const events = await Event.findAll();
-        console.log(events)
-        const eventsWithWeather = [];
-        for (e of events){
-            try{
-                const response = await axios.get(`http://api.openweathermap.org/data/2.5/forecast?q=${e.location}&appid=${WEATHER_API_KEY}`);
-                const event = {id: e.id, eventName: e.eventName, datetime: e.datetime, location: e.location, details: e.details, userId: e.userId, approved: e.approved, weather: response.data.list[0].weather[0].description}
-                eventsWithWeather.push(event)
-            }catch(e){
-                eventsWithWeather.push({id: e.id, eventName: e.eventName, datetime: e.datetime, location: e.location, details: e.details, userId: e.userId, approved: e.approved, weather: ""})
-            }
-        }
-        return res.json({events: eventsWithWeather, success: true});
+        return res.json({events, success: true});
     } catch (error) {
         console.error('Error fetching events:', error);
         return res.json({ message: 'Internal server error', success: false });

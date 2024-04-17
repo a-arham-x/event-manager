@@ -15,6 +15,7 @@
 <body>
     <button onclick="logOut()" class="top-right">Log Out</button>
     <button onclick="toggleCreateAdminForm()" class="top-right" style="margin-right: 100px;">Create Admin</button>
+    <button onclick="viewUsers()" class="top-right" style="margin-right: 240px;">Users</button>
 
     <h1>Welcome to Admin Dashboard, <%= admin.name %></h1>
 
@@ -62,7 +63,9 @@
 
     <script>
        // admin.js
-       
+       function viewUsers(){
+        window.location.href='/viewusers'
+       }
         function logOut(){
          localStorage.setItem("admin-token", "");
             window.location.href = "/";

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="/CSS/admin.css">
+</head>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    if (!localStorage.getItem("admin-token")){
+        window.location.href = "/"
+    }else{
+        const getUsers = async ()=>{
+            const response = await fetch("/api/users", {
+            method: "GET",
+            headers: {
+                "admin-token": localStorage.getItem("admin-token")
+            }
+        })
+            const json = await response.json()
+            console.log(json)
+        if (json.success){
+            const users = json.users;
+            console.log(users)
+            users.forEach(user => {
+                const userHtml = `
+                        <div class="event">
+                            <h3>${user.username}</h3>
+                            <p>ID: ${user.id}</p>
+                            <p>Name: ${user.name}</p>
+                            <p>Email: ${user.email}</p>
+                        </div>`;
+                        $('.events-section').append(userHtml);
+            });
+        }
+        }
+        getUsers();
+        function adminHome(){
+            window.location.href = "/home";
+        }
+    }
+</script>
+<body>
+    <button class="top-left" onclick="adminHome()">Home</button>
+    <div id="events">
+        <section class="events-section">
+            <h2>Users</h2>
+        </section>
+    </div>
+</body>
+</html>

@@ -27,6 +27,9 @@
                     <h3><%= event.eventName %></h3>
                     <p>Date: <%= event.datetime.slice(0, 10) %></p>
                     <p>Time: <%= event.datetime.slice(11, 19) %></p>
+                    <% if (event.details) { %>
+                        <p>Description: <%= event.details %></p>
+                    <% } %>
                     <p>Location: <%= event.location %></p>
                     <% if (event.weather) { %>
                         <p>Weather: <%= event.weather %></p>
@@ -53,7 +56,7 @@
                     <input type="time" id="eventTime" name="eventTime" required>
                 </div>
                 <div class="form-group">
-                    <label for="eventLocation">Event Location</label>
+                    <label for="eventLocation">Event Location (City)</label>
                     <input type="text" id="eventLocation" name="eventLocation" required>
                 </div>
                 <div class="form-group">
@@ -86,16 +89,29 @@
             success: function(response) {
                 if (response.success) {
                     const newEvent = response.event;
-                    const eventHtml = `
+                    if (newEvent.weather){
+                        const eventHtml = `
+                        <div class="event">
+                            <h3>${newEvent.eventName}</h3>
+                            <p>Date: ${newEvent.datetime.slice(0, 10)}</p>
+                            <p>Time: ${newEvent.datetime.slice(11, 19)}</p>
+                            <p>Location: ${newEvent.location}</p>
+                            <p>Weather: ${newEvent.weather}</p>
+                        </div>`;
+                        $('.events-section').append(eventHtml);
+                        alert(response.message);
+                    }  else{
+                        const eventHtml = `
                         <div class="event">
                             <h3>${newEvent.eventName}</h3>
                             <p>Date: ${newEvent.datetime.slice(0, 10)}</p>
                             <p>Time: ${newEvent.datetime.slice(11, 19)}</p>
                             <p>Location: ${newEvent.location}</p>
                         </div>`;
+                    } 
                     $('.events-section').append(eventHtml);
+                    alert(response.message);
                 }
-                alert(response.message);
             },
             error: function(xhr, status, error) {
                 alert("Error: " + error);
