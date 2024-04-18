@@ -123,8 +123,6 @@ sequelize.sync()
     })
     .catch(err => console.error('Error syncing database:', err));
 
-let loggedInUser;
-
 app.get("/", async (req, res)=>{
     res.render("login.ejs");
 })
@@ -136,23 +134,11 @@ app.get("/signup", async (req, res)=>{
 
 
 app.get("/home", async (req, res)=>{
-    const response = await fetch("http://localhost:3000/api/events");
-    const json = await response.json();
-    const events = json.events;
-    if (!loggedInUser){
-        res.render("loggingOut.ejs")
-    }
-    res.render("home.ejs", {user: loggedInUser, events});
+    res.render("home.ejs");
 })
 
 app.get("/admin", async (req, res)=>{
-    const response = await fetch("http://localhost:3000/api/events");
-    const json = await response.json();
-    const events = json.events;
-    if (!loggedInUser){
-        res.render("loggingOut.ejs")
-    }
-    res.render("adminhome.ejs", {admin: loggedInUser, events});
+    res.render("adminhome.ejs");
 })
 
 app.get("/viewusers", async (req, res)=>{
@@ -172,13 +158,10 @@ app.post('/api/login', async (req, res) => {
                 if (user.isAdmin){
                     const id = {admin:{id: user.id}}
                     const admin_token = jwt.sign(id, process.env.JWT_SECRET); 
-                    loggedInUser = {name: user.name, email: user.email, username: user.username};
                     return res.json({ message: 'Login successful', admin_token, success: true });
                 }
                 const id = {user:{id: user.id}}
-                console.log(id)
                 const token = jwt.sign(id, process.env.JWT_SECRET); 
-                loggedInUser = {name: user.name, email: user.email, username: user.username};
                 return res.json({ message: 'Login successful', token, success: true });
             } else {
                 return res.json({ message: 'Invalid username or password', success: false });
@@ -229,6 +212,26 @@ app.get("/api/users", fetchAdmin, async (req, res)=>{
     }
 })
 
+app.get("/api/user", fetchUser, async (req, res)=>{
+    try {
+        const user = await User.findByPk(req.user.id)
+        return res.json({user, success: true});
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        return res.json({ message: 'Internal server error', success: false });
+    }
+})
+
+app.get("/api/admin", fetchAdmin, async (req, res)=>{
+    try {
+        const admin = await User.findByPk(req.admin.id)
+        return res.json({admin, success: true});
+    } catch (error) {
+        console.error('Error fetching users:', error);
+        return res.json({ message: 'Internal server error', success: false });
+    }
+})
+
 // Endpoint for users to create events
 app.post('/api/events', fetchUser, async (req, res) => {
     const { eventName, datetime, location, details } = req.body;
@@ -265,8 +268,82 @@ app.post('/api/events', fetchUser, async (req, res) => {
     }
 });
 
+app.put("/api/events/:eventId", fetchUser, async (req, res)=>{
+    const eventId = req.params.eventId;
+    try{
+        const id = req.user.id;
+        const event = await Event.findByPk(eventId);
+
+        if (event.userId != id){
+            return res.json({message: "You cannot edit this event", success: false})
+        }
+        let response;
+        try{
+            response = await axios.get(`http://api.openweathermap.org/data/2.5/forecast?q=${location}&appid=${WEATHER_API_KEY}`);
+        }catch(e){
+
+        }
+
+        const { eventName, datetime, location, details } = req.body;
+
+        if (response){
+            event.eventName = eventName;
+            event.datetime = datetime;
+            event.location = location;
+            event.details = details;
+            event.weather = response.data.list[0].weather[0].description;
+            await event.save();
+        }else{
+            event.eventName = eventName;
+            event.datetime = datetime;
+            event.location = location;
+            event.details = details;
+            await event.save();
+        }
+
+        return res.json({message: "Event Edited Successfully", success: true})
+    }catch(error){
+        console.log("Error", error)
+        return res.json({message: "Internal Server Error", success: false})
+    }
+})
+
 // Endpoint to get all events (for the dashboard)
-app.get('/api/events', async (req, res) => {
+app.get('/api/user/events', fetchUser, async (req, res) => {
+    try {
+        const userId = req.user.id
+        const events = await Event.findAll();
+        return res.json({events, userId, success: true});
+    } catch (error) {
+        console.error('Error fetching events:', error);
+        return res.json({ message: 'Internal server error', success: false });
+    }
+});
+
+app.get('/api/admin/events', fetchAdmin, async (req, res) => {
+    try {
+        const userId = req.admin.id
+        const events = await Event.findAll();
+        return res.json({events, userId, success: true});
+    } catch (error) {
+        console.error('Error fetching events:', error);
+        return res.json({ message: 'Internal server error', success: false });
+    }
+});
+
+// Endpoint to get all events (for the dashboard)
+app.get('/api/admin/events', fetchAdmin, async (req, res) => {
+    try {
+        const events = await Event.findAll();
+        return res.json({events, success: true});
+    } catch (error) {
+        console.error('Error fetching events:', error);
+        return res.json({ message: 'Internal server error', success: false });
+    }
+});
+
+// Endpoint to get all events (for the dashboard)
+app.get('/api/user/events', fetchUser, async (req, res) => {
     try {
         const events = await Event.findAll();
         return res.json({events, success: true});
@@ -306,6 +383,31 @@ app.delete('/api/events/:eventId', fetchAdmin, async (req, res) => {
 
         if (!event) {
             return res.status(404).json({ message: 'Event not found', success: false });
+        }
+
+        // Delete the event
+        await event.destroy();
+
+        return res.json({ message: 'Event deleted successfully', success: true });
+    } catch (error) {
+        console.error('Error deleting event:', error);
+        return res.json({ message: 'Internal server error', success: false });
+    }
+});
+
+// Endpoint for user to delete an event
+app.delete('/api/user/events/:eventId', fetchUser, async (req, res) => {
+    const { eventId } = req.params;
+
+    try {
+        const event = await Event.findByPk(eventId);
+
+        if (!event) {
+            return res.status(404).json({ message: 'Event not found', success: false });
+        }
+
+        if (event.userId != req.user.id){
+            return res.json({ message: 'You cannot delete this event', success: false });
         }
 
         // Delete the event

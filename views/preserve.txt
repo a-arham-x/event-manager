@@ -1,0 +1,35 @@
+<!-- <% events.forEach(event => { %>
+                <div class="event">
+                    <h3><%= event.eventName %></h3>
+                    <p>Date: <%= event.datetime.slice(0, 10) %></p>
+                    <p>Time: <%= event.datetime.slice(11, 19) %></p>
+                    <% if (event.details) { %>
+                        <p>Description: <%= event.details %></p>
+                    <% } %>
+                    <p>Location: <%= event.location %></p>
+                    <% if (event.weather) { %>
+                        <p>Weather: <%= event.weather %></p>
+                    <% } %>
+                    <% if (event.approved) { %>
+                        <p>Event is approved</p>
+                    <% } %>
+                </div>
+            <% }); %> -->
+
+            <!-- <% events.forEach(event => { %>
+                <div class="event" id="event-<%= event.id %>">
+                    <h3><%= event.eventName %></h3>
+                    <p>Date: <%= event.datetime.slice(0, 10) %></p>
+                    <p>Time: <%= event.datetime.slice(11, 19) %></p>
+                    <p>Location: <%= event.location %></p>
+                    <% if (event.weather) { %>
+                        <p>Weather: <%= event.weather %></p>
+                    <% } %>
+                    <% if (event.approved) { %>
+                        <p>Event is approved</p>
+                    <% } else { %>
+                        <button id="button-<%= event.id %>" style="display:inline;" class="approve-btn" onclick="approveEvent('<%= event.id %>')">Approve</button>
+                    <% } %>
+                    <button class="delete-btn" onclick="deleteEvent('<%= event.id %>')">Delete</button>
+                </div>
+            <% }); %> -->

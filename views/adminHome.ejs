@@ -5,41 +5,87 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
     <link rel="stylesheet" href="/CSS/admin.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         if (!localStorage.getItem("admin-token")){
             window.location.href = "/"
+        }else{
+            const getEvents = async ()=>{
+                $.ajax({
+                url: "/api/admin/events",
+                method: "GET",
+                headers: {
+                    "admin-token": localStorage.getItem("admin-token")
+                },
+                success: function(response) {
+                    if (response.success) {
+                        const events = response.events;
+                        for (let i=0; i<events.length; i++){
+                            let eventHtml = `
+                            <div class="event">
+                            <h3>${events[i].eventName}</h3>
+                            <p>Date: ${events[i].datetime.slice(0, 10)}</p>
+                            <p>Time: ${events[i].datetime.slice(11, 19)}</p>
+                            <p>Location: ${events[i].location}</p>`
+                            if (events[i].weather){
+                                eventHtml += `<p>Weather: ${events[i].weather}</p>`
+                            }
+                            if (events[i].approved){
+                                eventHtml += `<p>Event is approved</p>`
+                            }
+                            else{
+                                eventHtml += `<button id="button-${events[i].id}" style="display:inline;" class="approve-btn" onclick="approveEvent(${events[i].id})">Approve</button>`
+                            }
+                            eventHtml += `<button class="delete-btn" onclick="deleteEvent(${events[i].id})">Delete</button></div>`;
+                            $('.events-section').append(eventHtml); 
+                        }
+                    }
+                },
+                error: function(xhr, status, error) {
+                    alert("Error: " + error);
+                }
+                
+            });
+            }
+            const getAdmin = async ()=>{
+                $.ajax({
+                url: "/api/admin",
+                method: "GET",
+                headers: {
+                    "admin-token": localStorage.getItem("admin-token")
+                },
+                success: function(response) {
+                    if (response.success) {
+                        console.log("Success Here")
+                        const admin = response.admin;
+                        console.log(admin)
+                        let header = `<h1>Welcome to Admin Dashboard, ${admin.name}</h1>`
+                        $(".head").append(header);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    alert("Error: " + error);
+                }
+                
+            });
+            }
+            getAdmin();
+            getEvents()
         }
     </script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
-<body>
+<body class="admin-home">
     <button onclick="logOut()" class="top-right">Log Out</button>
     <button onclick="toggleCreateAdminForm()" class="top-right" style="margin-right: 100px;">Create Admin</button>
     <button onclick="viewUsers()" class="top-right" style="margin-right: 240px;">Users</button>
 
-    <h1>Welcome to Admin Dashboard, <%= admin.name %></h1>
+    <div class="head"></div>
 
     <div id="events">
         <section class="events-section">
             <h2>Events</h2>
             <!-- Display events here -->
-            <% events.forEach(event => { %>
-                <div class="event" id="event-<%= event.id %>">
-                    <h3><%= event.eventName %></h3>
-                    <p>Date: <%= event.datetime.slice(0, 10) %></p>
-                    <p>Time: <%= event.datetime.slice(11, 19) %></p>
-                    <p>Location: <%= event.location %></p>
-                    <% if (event.weather) { %>
-                        <p>Weather: <%= event.weather %></p>
-                    <% } %>
-                    <% if (event.approved) { %>
-                        <p>Event is approved</p>
-                    <% } else { %>
-                        <button id="button-<%= event.id %>" style="display:inline;" class="approve-btn" onclick="approveEvent('<%= event.id %>')">Approve</button>
-                    <% } %>
-                    <button class="delete-btn" onclick="deleteEvent('<%= event.id %>')">Delete</button>
-                </div>
-            <% }); %>
+
         </section>
     </div>
 

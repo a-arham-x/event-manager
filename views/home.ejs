@@ -7,39 +7,110 @@
     <title>User Home</title>
     <link rel="stylesheet" href="/CSS/home.css">
 </head>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     if (!localStorage.getItem("user-token")){
         window.location.href = "/"
+    }else{
+        const getEvents = async ()=>{
+            $.ajax({
+            url: "/api/user/events",
+            method: "GET",
+            headers: {
+                "user-token": localStorage.getItem("user-token")
+            },
+            success: function(response) {
+                if (response.success) {
+                    const events = response.events;
+                    for (let i=0; i<events.length; i++){
+                        if (events[i].weather){
+                        let eventHtml = `
+                        <div class="event" id=event-${events[i].id}>
+                            <h3>${events[i].eventName}</h3>
+                            <p>Date: ${events[i].datetime.slice(0, 10)}</p>
+                            <p>Time: ${events[i].datetime.slice(11, 19)}</p>
+                            <p>Location: ${events[i].location}</p>
+                            <p>Weather: ${events[i].weather}</p>`;
+                        if (response.userId==events[i].userId){
+                            eventHtml += `<button onClick="toggleEditEventForm(${events[i]})">Edit</button> <button onClick="deleteEvent(${events[i].id})">Delete</button></div>`
+                        }else{
+                            eventHtml += "</div>"
+                        }
+                        $('.events-section').append(eventHtml);
+                    }  else{
+                        let eventHtml = `
+                        <div class="event">
+                            <h3>${events[i].eventName}</h3>
+                            <p>Date: ${events[i].datetime.slice(0, 10)}</p>
+                            <p>Time: ${events[i].datetime.slice(11, 19)}</p>
+                            <p>Location: ${events[i].location}</p>`
+                        ;
+                        if (response.userId==events[i].userId){
+                            eventHtml += "<button>Edit</button> <button>Delete</button></div>"
+                        }else{
+                            eventHtml += "</div>"
+                        }
+                        $('.events-section').append(eventHtml); 
+                    }
+                    }
+                }
+            },
+            error: function(xhr, status, error) {
+                alert("Error: " + error);
+            }
+            
+        });
+        }
+        const getUser = async ()=>{
+                $.ajax({
+                url: "/api/user",
+                method: "GET",
+                headers: {
+                    "user-token": localStorage.getItem("user-token")
+                },
+                success: function(response) {
+                    if (response.success) {
+                        const user = response.user;
+                        let header = `<h1>Welcome, ${user.name}</h1>`
+                        $(".head").append(header);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    alert("Error: " + error);
+                }
+                
+            });
+        }
+        getUser();
+        getEvents()
     }
 </script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <body>
     <header>
-        <h1>Welcome, <%= user.name %>!</h1>
+        <div class="head"></div>
         <button onclick="logOut()" class="logout-btn">Logout</button>
     </header>
     <main>
         <section class="events-section">
             <h2>Events</h2>
             <!-- Display events here -->
-            <% events.forEach(event => { %>
-                <div class="event">
-                    <h3><%= event.eventName %></h3>
-                    <p>Date: <%= event.datetime.slice(0, 10) %></p>
-                    <p>Time: <%= event.datetime.slice(11, 19) %></p>
-                    <% if (event.details) { %>
-                        <p>Description: <%= event.details %></p>
-                    <% } %>
-                    <p>Location: <%= event.location %></p>
-                    <% if (event.weather) { %>
-                        <p>Weather: <%= event.weather %></p>
-                    <% } %>
-                    <% if (event.approved) { %>
-                        <p>Event is approved</p>
-                    <% } %>
-                </div>
-            <% }); %>
+            
         </section>
+        <div id="editEventForm" class="edit-event-form">
+            <button onclick="toggleEditEventForm(null)" class="close-btn">&times;</button>
+            <h2>Edit Admin</h2>
+            <div class="edit-event-div">
+                <!-- <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required>
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required>
+                <button onclick="createAdmin()">Create Admin</button> -->
+            </div>
+        </div>
         <section class="create-event-section">
             <h2>Create Event</h2>
             <div>
@@ -118,5 +189,67 @@
             }
         });
     }
+    async function deleteEvent(id){
+        $.ajax({
+            url: `/api/user/events/${id}`,
+            method: "DELETE",
+            headers: {
+                "user-token": localStorage.getItem("user-token")
+            },
+            success: function(response) {
+                console.log(response)
+                if (response.success) {
+                    $(`#event-${id}`).remove();
+                }
+                window.alert(response.message);
+            },
+            error: function(xhr, status, error) {
+                console.log(`/api/user/events/${id}`)
+                console.error('Error approving event:', error);
+                window.alert('An error occurred while deleting the event.');
+            }
+        });
+    }
+
+    function toggleEditEventForm(event) {
+        var form = document.getElementById("editEventForm");
+        if (event === null) {
+            form.style.display = "none";
+        } else {
+            form.style.display = "block";
+            const eventHtml = `
+                <label for="eventName">Event Name</label>
+                <input type="text" id="eventName-edit" name="eventName" value=${event.eventName} required>
+                <label for="eventDate">Event Date</label>
+                <input type="date" id="eventDate-edit" name="eventDate" value=${event.datetime.slice(0, 10)} required>
+                <label for="eventTime">Event Time</label>
+                <input type="time" id="eventTime-edit" name="eventTime" value=${event.datetime.slice(11, 19)} required>
+                <label for="eventLocation">Event Location (City)</label>
+                <input type="text" id="eventLocation-edit" name="eventLocation" value=${event.location} required>
+                <label for="eventLocation">Event Details</label>
+                <input type="text" id="eventDetails-edit" name="eventDetails" value=${event.details}>
+            <button onclick="editEvent(${event.id})">Create Event</button>`
+            const editEventDiv = document.getElementsByClassName("edit-event-div")
+            editEventDiv.appendChild(eventHtml)
+        }
+    }
+
+    async function editEvent(id){
+        const eventName = document.getElementById("eventName-edit").value;
+        const datetime = document.getElementById("eventDate-edit").value + "T" + document.getElementById("eventTime-edit").value + ":00"
+        const location = document.getElementById("eventLocation-edit").value;
+        const details = document.getElementById("eventDetails-edit").value;
+        const response = await fetch(`/api/events/${id}`, {
+            method: "PUT",
+            headers: {
+                "user-token": localStorage.getItem("user-token")
+            },
+            body: JSON.stringify({eventName, datetime, location, details})
+        })
+        const json = await response.json();
+        window.alert(json.message);
+    }
+
+
 </script>
 </html>
