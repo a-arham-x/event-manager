@@ -31,7 +31,8 @@
                             <p>Date: ${events[i].datetime.slice(0, 10)}</p>
                             <p>Time: ${events[i].datetime.slice(11, 19)}</p>
                             <p>Location: ${events[i].location}</p>
-                            <p>Weather: ${events[i].weather}</p>`;
+                            <p>Weather: ${events[i].weather}</p>
+                            <p>Details: ${events[i].details}</p>`;
                         if (response.userId==events[i].userId){
                             eventHtml += `<button onClick="toggleEditEventForm(${events[i].id})">Edit</button> <button onClick="deleteEvent(${events[i].id})">Delete</button></div>`
                         }else{
@@ -44,7 +45,8 @@
                             <h3>${events[i].eventName}</h3>
                             <p>Date: ${events[i].datetime.slice(0, 10)}</p>
                             <p>Time: ${events[i].datetime.slice(11, 19)}</p>
-                            <p>Location: ${events[i].location}</p>`
+                            <p>Location: ${events[i].location}</p>
+                            <p>Details: ${events[i].details}</p>`
                         ;
                         if (response.userId==events[i].userId){
                             eventHtml += `<button onClick="toggleEditEventForm(${events[i].id})">Edit</button> <button onClick="deleteEvent(${events[i].id})">Delete</button></div>`
@@ -199,6 +201,7 @@
                             <p>Time: ${newEvent.datetime.slice(11, 19)}</p>
                             <p>Location: ${newEvent.location}</p>
                             <p>Weather: ${newEvent.weather}</p>
+                            <p>Details: ${newEvent.details}</p>
                             <button onClick="toggleEditEventForm(${newEvent.id})">Edit</button> <button onClick="deleteEvent(${newEvent.id})">Delete</button>
                         </div>`;
                         $('.events-section').append(eventHtml);
@@ -209,6 +212,7 @@
                             <p>Date: ${newEvent.datetime.slice(0, 10)}</p>
                             <p>Time: ${newEvent.datetime.slice(11, 19)}</p>
                             <p>Location: ${newEvent.location}</p>
+                            <p>Details: ${newEvent.details}</p>
                             <button onClick="toggleEditEventForm(${newEvent.id})">Edit</button> <button onClick="deleteEvent(${newEvent.id})">Delete</button>
                         </div>`;
                         $('.events-section').append(eventHtml);
