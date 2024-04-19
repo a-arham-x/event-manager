@@ -149,6 +149,10 @@ app.get("/viewusers", async (req, res)=>{
 app.post('/api/login', async (req, res) => {
     const { username, password } = req.body;
 
+    if (!username || !password){
+        return res.json({message: "Enter both username and password", success: false})
+    }
+
     try {
         const user = await User.findOne({ where: { username } });
 
