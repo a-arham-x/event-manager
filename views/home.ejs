@@ -161,7 +161,6 @@
                             <button onClick="toggleEditEventForm(${newEvent.id})">Edit</button> <button onClick="deleteEvent(${newEvent.id})">Delete</button>
                         </div>`;
                         $('.events-section').append(eventHtml);
-                        alert(response.message);
                     }  else{
                         const eventHtml = `
                         <div class="event">
