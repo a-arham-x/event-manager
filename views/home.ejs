@@ -39,7 +39,7 @@
                         $('.events-section').append(eventHtml);
                     }  else{
                         let eventHtml = `
-                        <div class="event">
+                        <div class="event" id=event-${events[i].id}>
                             <h3>${events[i].eventName}</h3>
                             <p>Date: ${events[i].datetime.slice(0, 10)}</p>
                             <p>Time: ${events[i].datetime.slice(11, 19)}</p>
