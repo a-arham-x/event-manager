@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Home</title>
     <link rel="stylesheet" href="/CSS/home.css">
+    <script src="https://cdn.lordicon.com/lordicon.js"></script>
 </head>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
@@ -87,12 +88,20 @@
 </script>
 <body>
     <header>
+        <center> <lord-icon src="https://cdn.lordicon.com/wwmtsdzm.json" trigger="loop" delay="1500" style="width:200px;height:200px">
+</lord-icon></center>
         <div class="head"></div>
         <button onclick="logOut()" class="logout-btn">Logout</button>
     </header>
     <main>
         <section class="events-section">
-            <h2>Events</h2>
+            <h2><i>Events</i><script src="https://cdn.lordicon.com/lordicon.js"></script>
+                <lord-icon
+                    src="https://cdn.lordicon.com/wzwygmng.json"
+                    trigger="loop"
+                    delay="1000"
+                    style="width:25px;height:25px">
+                </lord-icon></h2>
             <!-- Display events here -->
             
         </section>
@@ -102,31 +111,63 @@
             
         </div>
         <section class="create-event-section">
-            <h2>Create Event</h2>
+            <h2><i>Create Event</i> <lord-icon src="https://cdn.lordicon.com/wuvorxbv.json" trigger="loop" delay="1000" style="width:30px;height:30px"> </lord-icon></h2>
+            
             <div>
                 <div class="form-group">
-                    <label for="eventName">Event Name</label>
+                    <label for="eventName"><i>Event Name</i><script src="https://cdn.lordicon.com/lordicon.js"></script>
+                        <lord-icon
+                            src="https://cdn.lordicon.com/pbbsmkso.json"
+                            trigger="loop"
+                            delay="1000"
+                            style="width:25px;height:25px">
+                        </lord-icon></label>
                     <input type="text" id="eventName" name="eventName" required>
                 </div>
                 <div class="form-group">
-                    <label for="eventDate">Event Date</label>
+                    <label for="eventDate"><i>Event Date</i><script src="https://cdn.lordicon.com/lordicon.js"></script>
+                        <lord-icon
+                            src="https://cdn.lordicon.com/bvdrirjp.json"
+                            trigger="loop"
+                            delay="1000"
+                            style="width:25px;height:25px">
+                        </lord-icon></label>
                     <input type="date" id="eventDate" name="eventDate" required>
                 </div>
                 <div class="form-group">
-                    <label for="eventTime">Event Time</label>
+                    <label for="eventTime"><i>Event Time</i><script src="https://cdn.lordicon.com/lordicon.js"></script>
+                        <lord-icon
+                            src="https://cdn.lordicon.com/qvyppzqz.json"
+                            trigger="loop"
+                            delay="1000"
+                            style="width:23px;height:23px">
+                        </lord-icon></label>
                     <input type="time" id="eventTime" name="eventTime" required>
                 </div>
                 <div class="form-group">
-                    <label for="eventLocation">Event Location (City)</label>
+                    <label for="eventLocation"><i>Event Location (City)</i> <script src="https://cdn.lordicon.com/lordicon.js"></script>
+                        <lord-icon
+                            src="https://cdn.lordicon.com/surcxhka.json"
+                            trigger="loop"
+                            delay="1000"
+                            style="width:25px;height:25px">
+                        </lord-icon></label>
                     <input type="text" id="eventLocation" name="eventLocation" required>
                 </div>
                 <div class="form-group">
-                    <label for="eventLocation">Event Details</label>
+                    <label for="eventLocation"><i>Event Details</i><script src="https://cdn.lordicon.com/lordicon.js"></script>
+                        <lord-icon
+                            src="https://cdn.lordicon.com/ozmbktct.json"
+                            trigger="loop"
+                            delay="1000"
+                            style="width:26px;height:26px">
+                        </lord-icon></label>
                     <input type="text" id="eventDetails" name="eventDetails">
                 </div>
-                <button onclick="createCustomEvent()">Create Event</button>
+                <button onclick="createCustomEvent()"><i>Create Event</i></button>
             </div>
         </section>
+    </canvas>
     </main>
 </body>
 <script>
@@ -259,7 +300,5 @@
         const json = await response.json();
         window.alert(json.message);
     }
-
-
 </script>
 </html>

@@ -3,7 +3,7 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f3f3f3;
+    background-color: rgb(243, 243, 243);
 }
 
 .container {
@@ -43,12 +43,25 @@ button {
     padding: 10px;
     border: none;
     border-radius: 5px;
-    background-color: gold;
+    background-color:  rgb(24, 168, 125);
     color: #fff;
     font-size: 16px;
     cursor: pointer;
 }
 
 button:hover {
-    background-color: greenyellow;
+    background-color: #0056b3 ;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+

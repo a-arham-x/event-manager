@@ -7,14 +7,14 @@ body {
 }
 
 header {
-    background-color: #007bff;
+    background-color:#0056b3;
     color: #fff;
     padding: 20px;
     text-align: center;
 }
 
 .logout-btn {
-    color: #fff;
+    color: white;
     text-decoration: none;
     border: 1px solid #fff;
     padding: 8px 20px;
@@ -56,7 +56,7 @@ label {
 
 input[type="text"],
 input[type="date"] {
-    width: 100%;
+    width: 95%;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
@@ -66,7 +66,7 @@ button {
     padding: 10px 20px;
     border: none;
     border-radius: 5px;
-    background-color: #007bff;
+    background-color:rgb(16, 160, 105);
     color: #fff;
     cursor: pointer;
     transition: background-color 0.3s ease;
@@ -96,3 +96,10 @@ button:hover {
     width: 300px; /* Adjust width as needed */
     text-align: center; /* Center align the text within the form */
 }
+
+.container {
+
+    border-radius: 25px;
+    width : 300px;
+    height : 300px;
+    }

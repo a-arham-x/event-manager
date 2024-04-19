@@ -12,7 +12,7 @@ body {
 
 button {
     padding: 10px 20px;
-    background-color: #007bff;
+    background-color: rgb(21, 190, 125);
     color: white;
     border: none;
     border-radius: 5px;
@@ -33,7 +33,7 @@ button:hover {
 }
 
 h2 {
-    color: #007bff;
+    color: rgb(21, 190, 125);
 }
 
 ul {
@@ -92,7 +92,7 @@ li {
 .create-admin-form button {
     width: 100%; /* Make button full width */
     padding: 10px 20px;
-    background-color: #007bff;
+    background-color: rgb(21, 190, 125);
     color: white;
     border: none;
     border-radius: 5px;
@@ -117,3 +117,18 @@ li {
     color: #555; /* Change color on hover if needed */
 }
 
+.admin-home-btn{
+    position: absolute;
+    top: 10px;
+    left: 10px; /* Adjust this value to move the button to the right */
+    background-color: rgb(21, 190, 125);
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.admin-home-btn:hover{
+    background-color:#0056b3 ;
+}
