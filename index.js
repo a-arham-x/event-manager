@@ -235,7 +235,6 @@ app.get("/api/admin", fetchAdmin, async (req, res)=>{
 // Endpoint for users to create events
 app.post('/api/events', fetchUser, async (req, res) => {
     const { eventName, datetime, location, details } = req.body;
-
     try {
         const response = await axios.get(`http://api.openweathermap.org/data/2.5/forecast?q=${location}&appid=${WEATHER_API_KEY}`);
         // console.log(response)
@@ -285,7 +284,6 @@ app.put("/api/events/:eventId", fetchUser, async (req, res)=>{
         }
 
         const { eventName, datetime, location, details } = req.body;
-
         if (response){
             event.eventName = eventName;
             event.datetime = datetime;
@@ -314,6 +312,17 @@ app.get('/api/user/events', fetchUser, async (req, res) => {
         const userId = req.user.id
         const events = await Event.findAll();
         return res.json({events, userId, success: true});
+    } catch (error) {
+        console.error('Error fetching events:', error);
+        return res.json({ message: 'Internal server error', success: false });
+    }
+});
+
+// Endpoint to get all events (for the dashboard)
+app.get('/api/user/event/:id', fetchUser, async (req, res) => {
+    try {
+        const event = await Event.findByPk(req.params.id);
+        return res.json({event, success: true});
     } catch (error) {
         console.error('Error fetching events:', error);
         return res.json({ message: 'Internal server error', success: false });

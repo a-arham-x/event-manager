@@ -32,7 +32,7 @@
                             <p>Location: ${events[i].location}</p>
                             <p>Weather: ${events[i].weather}</p>`;
                         if (response.userId==events[i].userId){
-                            eventHtml += `<button onClick="toggleEditEventForm(${events[i]})">Edit</button> <button onClick="deleteEvent(${events[i].id})">Delete</button></div>`
+                            eventHtml += `<button onClick="toggleEditEventForm(${events[i].id})">Edit</button> <button onClick="deleteEvent(${events[i].id})">Delete</button></div>`
                         }else{
                             eventHtml += "</div>"
                         }
@@ -46,7 +46,7 @@
                             <p>Location: ${events[i].location}</p>`
                         ;
                         if (response.userId==events[i].userId){
-                            eventHtml += "<button>Edit</button> <button>Delete</button></div>"
+                            eventHtml += `<button onClick="toggleEditEventForm(${events[i].id})">Edit</button> <button onClick="deleteEvent(${events[i].id})">Delete</button></div>`
                         }else{
                             eventHtml += "</div>"
                         }
@@ -98,18 +98,8 @@
         </section>
         <div id="editEventForm" class="edit-event-form">
             <button onclick="toggleEditEventForm(null)" class="close-btn">&times;</button>
-            <h2>Edit Admin</h2>
-            <div class="edit-event-div">
-                <!-- <label for="name">Name:</label>
-                <input type="text" id="name" name="name" required>
-                <label for="username">Username:</label>
-                <input type="text" id="username" name="username" required>
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" required>
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required>
-                <button onclick="createAdmin()">Create Admin</button> -->
-            </div>
+            <h2>Edit Edit</h2>
+            
         </div>
         <section class="create-event-section">
             <h2>Create Event</h2>
@@ -155,7 +145,7 @@
             headers: {
                 "Content-type": "application/json",
                 "user-token": localStorage.getItem("user-token")
-            },
+            }, 
             data: JSON.stringify({eventName, datetime, location, details}),
             success: function(response) {
                 if (response.success) {
@@ -168,19 +158,22 @@
                             <p>Time: ${newEvent.datetime.slice(11, 19)}</p>
                             <p>Location: ${newEvent.location}</p>
                             <p>Weather: ${newEvent.weather}</p>
+                            <button onClick="toggleEditEventForm(${newEvent.id})">Edit</button> <button onClick="deleteEvent(${newEvent.id})">Delete</button>
                         </div>`;
                         $('.events-section').append(eventHtml);
                         alert(response.message);
                     }  else{
                         const eventHtml = `
-                        <div class="event">
+                        < class="event">
                             <h3>${newEvent.eventName}</h3>
                             <p>Date: ${newEvent.datetime.slice(0, 10)}</p>
                             <p>Time: ${newEvent.datetime.slice(11, 19)}</p>
                             <p>Location: ${newEvent.location}</p>
+                            <button onClick="toggleEditEventForm(${events[i].id})">Edit</button> <button onClick="deleteEvent(${events[i].id})">Delete</button>
                         </div>`;
+                        $('.events-section').append(eventHtml);
                     } 
-                    $('.events-section').append(eventHtml);
+                    
                     alert(response.message);
                 }
             },
@@ -211,37 +204,55 @@
         });
     }
 
-    function toggleEditEventForm(event) {
+    async function toggleEditEventForm(id) {
         var form = document.getElementById("editEventForm");
-        if (event === null) {
+        if (id === null) {
+            form.removeChild(document.getElementsByClassName("edit-event-div")[0])
             form.style.display = "none";
         } else {
             form.style.display = "block";
-            const eventHtml = `
-                <label for="eventName">Event Name</label>
-                <input type="text" id="eventName-edit" name="eventName" value=${event.eventName} required>
-                <label for="eventDate">Event Date</label>
-                <input type="date" id="eventDate-edit" name="eventDate" value=${event.datetime.slice(0, 10)} required>
-                <label for="eventTime">Event Time</label>
-                <input type="time" id="eventTime-edit" name="eventTime" value=${event.datetime.slice(11, 19)} required>
-                <label for="eventLocation">Event Location (City)</label>
-                <input type="text" id="eventLocation-edit" name="eventLocation" value=${event.location} required>
-                <label for="eventLocation">Event Details</label>
-                <input type="text" id="eventDetails-edit" name="eventDetails" value=${event.details}>
-            <button onclick="editEvent(${event.id})">Create Event</button>`
-            const editEventDiv = document.getElementsByClassName("edit-event-div")
-            editEventDiv.appendChild(eventHtml)
+            $.ajax({
+                url: `/api/user/event/${id}`,
+                "method": "GET", 
+                "headers": {
+                    "user-token": localStorage.getItem("user-token")
+                },
+                success: function(response) {
+                if (response.success) {
+                    const event = response.event;
+                    const eventHtml = `<div class="edit-event-div">
+                    <label for="eventName">Event Name</label>
+                    <input type="text" id="eventName-edit" name="eventName" value="${event.eventName}" required>
+                    <label for="eventDate">Event Date</label>
+                    <input type="date" id="eventDate-edit" name="eventDate" value=${event.datetime.slice(0, 10)} required>
+                    <label for="eventTime">Event Time</label>
+                    <input type="time" id="eventTime-edit" name="eventTime" value=${event.datetime.slice(11, 19)} required>
+                    <label for="eventLocation">Event Location (City)</label>
+                    <input type="text" id="eventLocation-edit" name="eventLocation" value="${event.location}" required>
+                    <label for="eventLocation">Event Details</label>
+                    <input type="text" id="eventDetails-edit" name="eventDetails" value="${event.details}">
+                    <button onclick="editEvent(${event.id})">Edit Event</button></div>`
+                    $(".edit-event-form").append(eventHtml)
+                }
+            },
+            error: function(xhr, status, error) {
+                alert("Error: " + error);
+            }
+            })
+            
         }
     }
 
     async function editEvent(id){
         const eventName = document.getElementById("eventName-edit").value;
-        const datetime = document.getElementById("eventDate-edit").value + "T" + document.getElementById("eventTime-edit").value + ":00"
+        const datetime = document.getElementById("eventDate-edit").value + "T" + document.getElementById("eventTime-edit").value
         const location = document.getElementById("eventLocation-edit").value;
         const details = document.getElementById("eventDetails-edit").value;
+        console.log(JSON.stringify({eventName, datetime, location, details}))
         const response = await fetch(`/api/events/${id}`, {
             method: "PUT",
             headers: {
+                "Content-type": "application/json",
                 "user-token": localStorage.getItem("user-token")
             },
             body: JSON.stringify({eventName, datetime, location, details})
