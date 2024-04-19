@@ -169,7 +169,7 @@
                             <p>Date: ${newEvent.datetime.slice(0, 10)}</p>
                             <p>Time: ${newEvent.datetime.slice(11, 19)}</p>
                             <p>Location: ${newEvent.location}</p>
-                            <button onClick="toggleEditEventForm(${events[i].id})">Edit</button> <button onClick="deleteEvent(${events[i].id})">Delete</button>
+                            <button onClick="toggleEditEventForm(${newEvent.id})">Edit</button> <button onClick="deleteEvent(${newEvent.id})">Delete</button>
                         </div>`;
                         $('.events-section').append(eventHtml);
                     } 
