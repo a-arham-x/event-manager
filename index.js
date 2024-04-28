@@ -7,6 +7,7 @@ const fetchAdmin = require("./middlewares/fetchAdmin");
 const axios = require("axios");
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient()
+const path = require("path")
 
 require("dotenv").config();
 
@@ -15,31 +16,34 @@ const PORT = 3000;
 
 app.set("view-engine", "ejs");
 
-app.use('/CSS', express.static('CSS'));
+app.use(express.static(path.join(__dirname, 'public')));
 
 // Middleware
 app.use(bodyParser.json());
 
 app.get("/", async (req, res) => {
-    res.render("login.ejs");
+    const filePath = path.join(__dirname, 'public', 'login.html');
+    return res.sendFile(filePath);
 })
 
 app.get("/signup", async (req, res) => {
-    res.render("signup.ejs");
+    const filePath = path.join(__dirname, 'public', 'signup.html');
+    return res.sendFile(filePath);
 })
 
-
-
 app.get("/home", async (req, res) => {
-    res.render("home.ejs");
+    const filePath = path.join(__dirname, 'public', 'home.html');
+    return res.sendFile(filePath);
 })
 
 app.get("/admin", async (req, res) => {
-    res.render("adminhome.ejs");
+    const filePath = path.join(__dirname, 'public', 'adminHome.html');
+    return res.sendFile(filePath);
 })
 
 app.get("/viewusers", async (req, res) => {
-    res.render("viewUsers.ejs");
+    const filePath = path.join(__dirname, 'public', 'viewUsers.html');
+    return res.sendFile(filePath);
 })
 
 // Route for user login
