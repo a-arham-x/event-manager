@@ -35,9 +35,9 @@
                                 eventHtml += `<p>Event is approved</p>`
                             }
                             else{
-                                eventHtml += `<button id="button-${events[i].id}" style="display:inline;" class="approve-btn" onclick="approveEvent(${events[i].id})">Approve</button>`
+                                eventHtml += `<button id="button-${events[i].id}" style="display:inline;" class="approve-btn" onclick="approveEvent('${events[i].id}')">Approve</button>`
                             }
-                            eventHtml += `<button class="delete-btn" onclick="deleteEvent(${events[i].id})">Delete</button></div>`;
+                            eventHtml += `<button class="delete-btn" onclick="deleteEvent('${events[i].id}')">Delete</button></div>`;
                             $('.events-section').append(eventHtml); 
                         }
                     }
@@ -59,7 +59,6 @@
                     if (response.success) {
                         console.log("Success Here")
                         const admin = response.admin;
-                        console.log(admin)
                         let header = `<h1>Welcome to Admin Dashboard, ${admin.name}</h1>`
                         $(".head").append(header);
                     }
@@ -149,8 +148,7 @@ function logOut(){
             success: function(response) {
                 if (response.success) {
                     $(`#event-${id}`).append("<p>Event is approved</p>")
-                    const approveButton = $(`#button-${id}`);
-                    approveButton.style.display="none";
+                    $(`#button-${id}`).remove();
                 }
                 window.alert(response.message);
             },

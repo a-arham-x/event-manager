@@ -34,7 +34,7 @@
                             <p>Weather: ${events[i].weather}</p>
                             <p>Details: ${events[i].details}</p>`;
                         if (response.userId==events[i].userId){
-                            eventHtml += `<button onClick="toggleEditEventForm(${events[i].id})">Edit</button> <button onClick="deleteEvent(${events[i].id})">Delete</button></div>`
+                            eventHtml += `<button onClick="toggleEditEventForm('${events[i].id}')">Edit</button> <button onClick="deleteEvent('${events[i].id}')">Delete</button></div>`
                         }else{
                             eventHtml += "</div>"
                         }
@@ -49,7 +49,7 @@
                             <p>Details: ${events[i].details}</p>`
                         ;
                         if (response.userId==events[i].userId){
-                            eventHtml += `<button onClick="toggleEditEventForm(${events[i].id})">Edit</button> <button onClick="deleteEvent(${events[i].id})">Delete</button></div>`
+                            eventHtml += `<button onClick="toggleEditEventForm('${events[i].id}')">Edit</button> <button onClick="deleteEvent('${events[i].id}')">Delete</button></div>`
                         }else{
                             eventHtml += "</div>"
                         }
@@ -179,7 +179,7 @@
     }
     async function createCustomEvent(){
         const eventName = document.getElementById("eventName").value;
-        const datetime = document.getElementById("eventDate").value + "T" + document.getElementById("eventTime").value + ":00"
+        const datetime = document.getElementById("eventDate").value + " " + document.getElementById("eventTime").value + ":00"
         const location = document.getElementById("eventLocation").value;
         const details = document.getElementById("eventDetails").value;
         $.ajax({
@@ -202,7 +202,7 @@
                             <p>Location: ${newEvent.location}</p>
                             <p>Weather: ${newEvent.weather}</p>
                             <p>Details: ${newEvent.details}</p>
-                            <button onClick="toggleEditEventForm(${newEvent.id})">Edit</button> <button onClick="deleteEvent(${newEvent.id})">Delete</button>
+                            <button onClick="toggleEditEventForm('${newEvent.id}')">Edit</button> <button onClick="deleteEvent('${newEvent.id}')">Delete</button>
                         </div>`;
                         $('.events-section').append(eventHtml);
                     }  else{
@@ -213,11 +213,13 @@
                             <p>Time: ${newEvent.datetime.slice(11, 19)}</p>
                             <p>Location: ${newEvent.location}</p>
                             <p>Details: ${newEvent.details}</p>
-                            <button onClick="toggleEditEventForm(${newEvent.id})">Edit</button> <button onClick="deleteEvent(${newEvent.id})">Delete</button>
+                            <button onClick="toggleEditEventForm('${newEvent.id}')">Edit</button> <button onClick="deleteEvent('${newEvent.id}')">Delete</button>
                         </div>`;
                         $('.events-section').append(eventHtml);
                     } 
                     
+                    alert(response.message);
+                }else{
                     alert(response.message);
                 }
             },
@@ -275,7 +277,7 @@
                     <input type="text" id="eventLocation-edit" name="eventLocation" value="${event.location}" required>
                     <label for="eventLocation">Event Details</label>
                     <input type="text" id="eventDetails-edit" name="eventDetails" value="${event.details}">
-                    <button onclick="editEvent(${event.id})">Edit Event</button></div>`
+                    <button onclick="editEvent('${event.id}')">Edit Event</button></div>`
                     $(".edit-event-form").append(eventHtml)
                 }
             },
@@ -289,7 +291,7 @@
 
     async function editEvent(id){
         const eventName = document.getElementById("eventName-edit").value;
-        const datetime = document.getElementById("eventDate-edit").value + "T" + document.getElementById("eventTime-edit").value
+        const datetime = document.getElementById("eventDate-edit").value + " " + document.getElementById("eventTime-edit").value
         const location = document.getElementById("eventLocation-edit").value;
         const details = document.getElementById("eventDetails-edit").value;
         console.log(JSON.stringify({eventName, datetime, location, details}))
