@@ -1,1 +1,1 @@
-View the website [here][https://event-manager-web.vercel.app/]
+View the website [here](https://event-manager-web.vercel.app/)
